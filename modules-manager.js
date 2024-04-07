@@ -43,21 +43,21 @@ function getModuleIDBySocket (targetSocket) {
 	return undefined;
 }
 
-function sendCommandToModule (idModule, featureKey, parameters, sentAt) {
+function sendCommandToModule (idModule, featureIdentifier, parameters, sentAt) {
 	if (!modules.has(idModule))
 		return;
 
 	const socket = modules.get(idModule);
 	socket.write(JSON.stringify({
 		event: CommandCenterEvents.COMMAND,
-		featureKey,
+		featureIdentifier,
 		parameters,
 		sentAt
 	}));
 }
 
-function gotResultFromModule (idModule, featureKey, result, sentAt) {
-	moduleEvents.emit(CommandCenterEvents.COMMAND_RESULT, { idModule, featureKey, result, sentAt });
+function gotResultFromModule (idModule, featureIdentifier, result, sentAt) {
+	moduleEvents.emit(CommandCenterEvents.COMMAND_RESULT, { idModule, featureIdentifier, result, sentAt });
 }
 
 module.exports = {

@@ -14,7 +14,7 @@ function onWebSocketConnect (socket) {
 	console.log("New user connected");
 
 	socket.on(CommandCenterEvents.COMMAND, data => {
-		sendCommandToModule(data.idModule, data.featureKey, data.parameters, data.sentAt);
+		sendCommandToModule(data.idModule, data.featureIdentifier, data.parameters, data.sentAt);
 	});
 
 	const commandResultHandler = data => socket.emit(CommandCenterEvents.COMMAND_RESULT, data);

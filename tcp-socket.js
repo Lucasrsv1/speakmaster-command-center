@@ -64,7 +64,7 @@ async function _handleModuleCommandResult (socket, message) {
 		_sendToModule(socket, CommandCenterEvents.MESSAGE, { message: "Module not registered or authenticated" });
 
 	// Envia o resultado para o front-end via socket.io
-	gotResultFromModule(idModule, message.featureKey, message.result, message.sentAt);
+	gotResultFromModule(idModule, message.featureIdentifier, message.result, message.sentAt);
 }
 
 function _sendToModule (socket, event, data) {
