@@ -56,6 +56,32 @@ function sendCommandToModule (idModule, featureIdentifier, parameters, sentAt) {
 	}));
 }
 
+function sendPreferenceValueUpdateToModule (idModule, preferences) {
+	if (!modules.has(idModule))
+		return;
+
+	const socket = modules.get(idModule);
+	socket.write(JSON.stringify({
+		event: CommandCenterEvents.PREFERENCE_VALUE_UPDATE,
+		preferences
+	}));
+}
+
+function monitorModulePreferences (idModule, subscribe) {
+	if (!modules.has(idModule))
+		return;
+
+	const socket = modules.get(idModule);
+	socket.write(JSON.stringify({
+		event: CommandCenterEvents.PREFERENCE_WATCH,
+		subscribe
+	}));
+}
+
+function gotDynamicChangesFromModule (idModule, preferences) {
+	moduleEvents.emit(CommandCenterEvents.PREFERENCE_DYNAMIC_CHANGE, { idModule, preferences });
+}
+
 function gotResultFromModule (idModule, featureIdentifier, result, sentAt) {
 	moduleEvents.emit(CommandCenterEvents.COMMAND_RESULT, { idModule, featureIdentifier, result, sentAt });
 }
@@ -64,5 +90,6 @@ module.exports = {
 	moduleEvents,
 	registerModule, unregisterModule,
 	getConnectedModulesIDs, getModuleIDBySocket,
-	sendCommandToModule, gotResultFromModule
+	sendCommandToModule, sendPreferenceValueUpdateToModule, monitorModulePreferences,
+	gotDynamicChangesFromModule, gotResultFromModule
 };

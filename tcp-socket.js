@@ -4,7 +4,13 @@ const { jwtDecode } = require("jwt-decode");
 
 const speakmasterApi = require("./speakmaster-api");
 const { CommandCenterEvents } = require("./command-center-events");
-const { registerModule, getModuleIDBySocket, gotResultFromModule, unregisterModule } = require("./modules-manager");
+const {
+	getModuleIDBySocket,
+	gotDynamicChangesFromModule,
+	gotResultFromModule,
+	registerModule,
+	unregisterModule
+} = require("./modules-manager");
 
 /**
  * Configura a comunicação via socket TCP com um cliente
@@ -24,6 +30,9 @@ function onTCPSocketConnect (socket) {
 					break;
 				case CommandCenterEvents.COMMAND_RESULT:
 					_handleModuleCommandResult(socket, message);
+					break;
+				case CommandCenterEvents.PREFERENCE_DYNAMIC_CHANGE:
+					_handleModuleDynamicChanges(socket, message);
 					break;
 				default:
 					_sendToModule(socket, CommandCenterEvents.MESSAGE, { message: "Invalid event: " + message.event });
@@ -63,8 +72,17 @@ async function _handleModuleCommandResult (socket, message) {
 	if (!idModule)
 		_sendToModule(socket, CommandCenterEvents.MESSAGE, { message: "Module not registered or authenticated" });
 
-	// Envia o resultado para o front-end via socket.io
+	// Envia o resultado para o SpeakMaster via socket.io
 	gotResultFromModule(idModule, message.featureIdentifier, message.result, message.sentAt);
+}
+
+async function _handleModuleDynamicChanges (socket, message) {
+	const idModule = getModuleIDBySocket(socket);
+	if (!idModule)
+		_sendToModule(socket, CommandCenterEvents.MESSAGE, { message: "Module not registered or authenticated" });
+
+	// Envia as mudanças dinâmicas das preferências para o SpeakMaster via socket.io
+	gotDynamicChangesFromModule(idModule, message.preferences);
 }
 
 function _sendToModule (socket, event, data) {
