@@ -1,6 +1,6 @@
 {
 	"name": "speakmaster-command-center",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "Central de comandos do SpeakMaster para comunicação com os módulos que implementam as funcionalidades",
 	"main": "index.js",
 	"scripts": {
